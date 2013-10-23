@@ -6,7 +6,7 @@
     "gulpplugin"
   ],
   "repository": "https://github.com/jstuckey/gulp-gzip.git",
-  "homepage": "http://github.com/jstuckey/gulp-gzip/",
+  "homepage": "https://github.com/jstuckey/gulp-gzip/",
   "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
   "dependencies": {
     "event-stream": "~3.0.16",
