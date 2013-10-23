@@ -1,0 +1,18 @@
+{
+  "name": "gulp-gzip",
+  "version": "0.0.1",
+  "description": "Gulp gzip file compression.",
+  "keywords": [
+    "gulpplugin"
+  ],
+  "main": "index.js",
+  "dependencies": {
+    "event-stream": "~3.0.16",
+    "clone": "~0.1.11"
+  },
+  "devDependencies": {
+    "gulp": "~1.0.0",
+    "mocha": "~1.13.0",
+    "should": "~2.0.2"
+  }
+}
