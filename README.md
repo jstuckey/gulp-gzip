@@ -34,7 +34,7 @@ var uglify = require("gulp-uglify");
 var gzip = require("gulp-gzip");
 
 gulp.task("deployScripts", function() {
-	gulp.src("./dev/scripts/*.js")
+	gulp.src("./dev/scripts/*.coffee")
 	.pipe(coffee())
 	.pipe(concat("all.js"))
 	.pipe(uglify())
