@@ -1,11 +1,13 @@
 {
   "name": "gulp-gzip",
   "version": "0.0.1",
-  "description": "Gulp gzip file compression.",
+  "description": "Gzip plugin for gulp.",
   "keywords": [
     "gulpplugin"
   ],
-  "main": "index.js",
+  "repository": "https://github.com/jbstucke/gulp-gzip.git",
+  "homepage": "http://github.com/jbstucke/gulp-gzip/",
+  "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
   "dependencies": {
     "event-stream": "~3.0.16",
     "clone": "~0.1.11"
@@ -14,5 +16,18 @@
     "gulp": "~1.0.0",
     "mocha": "~1.13.0",
     "should": "~2.0.2"
-  }
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "cd test/ && mocha"
+  },
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://github.com/jstuckey/gulp-gzip/raw/master/LICENSE"
+    }
+  ]
 }
