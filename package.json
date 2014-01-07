@@ -10,7 +10,8 @@
   "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
   "dependencies": {
     "event-stream": "~3.0.16",
-    "clone": "~0.1.11"
+    "clone": "~0.1.11",
+    "through": "~2.3.4"
   },
   "devDependencies": {
     "gulp": "~3.2.0",
