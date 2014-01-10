@@ -1,7 +1,6 @@
 var es = require("event-stream");
 var zlib = require("zlib");
 var clone = require("clone");
-var through = require("through");
 
 module.exports = function() {
 	'use strict';
@@ -32,7 +31,7 @@ module.exports = function() {
 
 			// File contents is a stream
 			var gzipStream = zlib.createGzip();
-			var throughStream = through();
+			var throughStream = es.through();
 			newFile.contents = file.contents.pipe(gzipStream).pipe(throughStream);
 			callback(null, newFile);
 		}
