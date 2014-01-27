@@ -39,7 +39,7 @@ describe("gulp-gzip", function() {
 			gulp.src("*.txt", {buffer: false})
 			.pipe(gzip())
 			.pipe(es.map(function(file, cb) {
-				// Check if file contents is a Buffer object
+				// Check if file contents is a Stream object
 				file.contents.should.be.instanceof(Stream); // should.have.type didn't work
 				cb(null, null);
 				done();
@@ -59,7 +59,7 @@ describe("gulp-gzip", function() {
 
 					// Check if the file was found
 					should.not.exist(err);
-  					should.exist(file);
+					should.exist(file);
 					file.should.not.be.empty;
 
 					done();
@@ -96,7 +96,7 @@ describe("gulp-gzip", function() {
 			.pipe(outStream);
 		});
 
-		it("should match uncompressed file with original file", function(done) {
+		it("should match uncompressed file with original file in buffer mode", function(done) {
 
 			var outStream = gulp.dest("./")
 
