@@ -31,8 +31,7 @@ module.exports = function() {
 
 			// File contents is a stream
 			var gzipStream = zlib.createGzip();
-			var throughStream = es.through();
-			newFile.contents = file.contents.pipe(gzipStream).pipe(throughStream);
+			newFile.contents = file.contents.pipe(gzipStream);
 			callback(null, newFile);
 		}
 	}
