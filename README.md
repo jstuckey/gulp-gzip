@@ -20,10 +20,6 @@ gulp.task("compress", function() {
 	.pipe(gzip())
 	.pipe(gulp.dest("./public/scripts"));
 });
-
-gulp.task("default", function() {
-  gulp.run("compress");
-});
 ```
 
 ```javascript
@@ -41,8 +37,17 @@ gulp.task("deployScripts", function() {
 	.pipe(gzip())
 	.pipe(gulp.dest("./public/scripts"));
 });
+```
 
-gulp.task("default", function() {
-  gulp.run("deployScripts");
+```javascript
+var gulp = require("gulp");
+var tar = require("gulp-tar");
+var gzip = require("gulp-gzip");
+
+gulp.task("tarball", function() {
+	gulp.src("./files/*")
+	.pipe(tar("archive.tar"))
+	.pipe(gzip())
+	.pipe(gulp.dest("."));
 });
 ```
