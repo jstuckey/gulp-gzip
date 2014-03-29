@@ -1,4 +1,10 @@
 node_modules
 .DS_STORE
-Gulpfile.js
-test/input.txt.gz
+examples/**.txt
+!examples/files/*.txt
+test/**.txt.gz
+!test/files/*.txt.gz
+test/**.txt
+!test/files/*.txt.gz
+**/old.js
+test/tmp

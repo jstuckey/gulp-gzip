@@ -1,25 +1,18 @@
 {
   "name": "gulp-gzip",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "Gzip plugin for gulp.",
   "keywords": [
-    "gulpplugin"
+    "compress",
+    "gulpplugin",
+    "gzip"
   ],
   "repository": "https://github.com/jstuckey/gulp-gzip.git",
   "homepage": "https://github.com/jstuckey/gulp-gzip/",
   "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
-  "dependencies": {
-    "event-stream": "~3.0.16",
-    "clone": "~0.1.11"
-  },
-  "devDependencies": {
-    "gulp": "~3.2.0",
-    "mocha": "~1.13.0",
-    "should": "~2.0.2"
-  },
   "main": "index.js",
   "scripts": {
-    "test": "cd test/ && mocha"
+    "test": "gulp"
   },
   "engines": {
     "node": ">= 0.6.0"
@@ -29,5 +22,22 @@
       "type": "MIT",
       "url": "http://github.com/jstuckey/gulp-gzip/raw/master/LICENSE"
     }
-  ]
+  ],
+  "dependencies": {
+    "bytes": "^0.3.0",
+    "event-stream": "^3.1.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.6.0",
+    "gulp-clean": "^0.2.4",
+    "gulp-filter": "^0.3.1",
+    "gulp-mocha": "^0.4.1",
+    "gulp-plumber": "^0.5.6",
+    "gulp-rename": "^1.2.0",
+    "gulp-tap": "^0.1.1",
+    "gulp-watch": "^0.5.3",
+    "mocha": "^1.18.2",
+    "nid": "^0.3.2",
+    "should": "^3.2.0-beta1"
+  }
 }

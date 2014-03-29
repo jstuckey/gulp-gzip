@@ -1,40 +1,106 @@
-var es = require("event-stream");
-var zlib = require("zlib");
-var clone = require("clone");
+var bytes = require('bytes');
+var es    = require('event-stream');
+var zlib  = require('zlib');
 
-module.exports = function() {
-	'use strict';
+module.exports = function(options) {
+  'use strict';
 
-	function compress(file, callback) {
+  var config, defaults, map;
 
-		 if (file.isNull()) return callback(null, file); // pass along
+  defaults = {
+       append: true,
+    threshold: false
+  };
 
-		// Clone file and append .gz file extension
-		var newFile = clone(file);
-		newFile.path += '.gz';
-		newFile.shortened += '.gz';
+  config     = merge(defaults, options);
+  map        = es.map(compress);
+  map.config = config;
 
-		// Check if file is a buffer or a stream
-		if(file.isBuffer()) {
+  function compress(file, cb) {
+    var buffer, buffers, newFile, streamHandler;
 
-			// File contents is a buffer
-			zlib.gzip(newFile.contents, function(err, buffer) {
-				if (!err) {
-					// Set the compressed file contents
-					newFile.contents = buffer;
-					callback(null, newFile);
-				} else {
-					callback(err, null);
-				}
-			});
-		} else {
+    if (file.isNull()) return cb(null, file);
 
-			// File contents is a stream
-			var gzipStream = zlib.createGzip();
-			newFile.contents = file.contents.pipe(gzipStream);
-			callback(null, newFile);
-		}
-	}
+    newFile = file.clone();
 
-	return es.map(compress);
+    if (config.append) {
+      newFile.path += '.gz';
+    }
+
+    // handle Buffer or Buffer/Stream with threshold
+    if (config.threshold || file.isBuffer()) {
+      // handle Stream
+      if (file.isStream()) {
+        // buffering array
+        buffers = [];
+
+        // buffer, process and pass through the stream
+        streamHandler = es.through(function(data) {
+            // buffer chunks
+            buffers.push(data);
+          }, function() {
+            // join bufferd chunks
+            buffer = Buffer.concat(buffers);
+
+            // handle too small files
+            if (buffer.length < config.threshold) {
+              return cb(null, file);
+            }
+
+            // gzip file
+            zlib.gzip(buffer, function(err, buffer) {
+              if (err) return cb(err, null);
+
+              // recreate Stream and pass it back into flow
+              newFile.contents = es.readArray([buffer]);
+              cb(null, newFile);
+            });
+        });
+
+        file.contents.pipe(streamHandler)
+      // handle simple Buffer
+      } else {
+        if (file.contents.length < config.threshold) {
+          return cb(null, file);
+        }
+
+        zlib.gzip(file.contents, function(err, buffer) {
+          if (err) return cb(err, null);
+
+          newFile.contents = buffer;
+          cb(null, newFile);
+        });
+      }
+    } else { // handle Stream without `threshold` option
+      newFile.contents = file.contents.pipe(zlib.createGzip());
+      cb(null, newFile);
+    }
+  }
+
+  return map;
 };
+
+function merge(target, source) {
+  if (typeof source === 'undefined') source = {};
+
+  Object.keys(source).forEach(function(key) {
+    if (key === 'threshold') {
+      switch (typeof source[key]) {
+        case 'string':
+          target[key] = bytes(source[key]);
+          break;
+        case 'number':
+          target[key] = source[key];
+          break;
+        case 'boolean':
+          target[key] = !source[key] ? false : 1024;
+        default:
+          break;
+      }
+    } else {
+      target[key] = source[key];
+    }
+  });
+
+  return target;
+}
