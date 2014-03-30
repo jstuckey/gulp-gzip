@@ -10,7 +10,7 @@
   "repository": "https://github.com/jstuckey/gulp-gzip.git",
   "homepage": "https://github.com/jstuckey/gulp-gzip/",
   "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
-  "main": "index.js",
+  "main": "lib/gulpGzip.js",
   "scripts": {
     "test": "gulp"
   },
@@ -25,14 +25,14 @@
   ],
   "dependencies": {
     "bytes": "^0.3.0",
-    "event-stream": "^3.1.1"
+    "gulp-util": "^2.2.14",
+    "through2": "^0.4.1"
   },
   "devDependencies": {
     "gulp": "^3.6.0",
     "gulp-clean": "^0.2.4",
     "gulp-filter": "^0.3.1",
     "gulp-mocha": "^0.4.1",
-    "gulp-plumber": "^0.5.6",
     "gulp-rename": "^1.2.0",
     "gulp-tap": "^0.1.1",
     "gulp-watch": "^0.5.3",
