@@ -2,9 +2,10 @@ node_modules
 .DS_STORE
 examples/**.txt
 !examples/files/*.txt
+examples/**.txt.gz
+!examples/files/*.txt.gz
+test/**.txt
+!test/files/*.txt
 test/**.txt.gz
 !test/files/*.txt.gz
-test/**.txt
-!test/files/*.txt.gz
-**/old.js
 test/tmp

@@ -1,1 +1,1 @@
-module.exports = require('./gulpGzip');
+module.exports = require('./lib/gulpGzip');
