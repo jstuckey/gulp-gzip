@@ -35,7 +35,7 @@ describe('gulp-gzip', function() {
         done();
       });
 
-      it('should set threshold to 1024 while receiving true', function(done) {
+      it('should set threshold to 150 while receiving true', function(done) {
         var instance = gzip({ threshold: true });
         instance.config.threshold.should.eql(150);
         done();
@@ -102,7 +102,7 @@ describe('gulp-gzip', function() {
           });
         });
 
-        gulp.src('files/large.txt')
+        gulp.src('files/small.txt')
           .pipe(rename({ basename: id }))
           .pipe(gzip())
           .pipe(out);
@@ -121,7 +121,7 @@ describe('gulp-gzip', function() {
           });
         });
 
-        gulp.src('files/large.txt')
+        gulp.src('files/small.txt')
           .pipe(rename({ basename: id }))
           .pipe(gzip({ append: false }))
           .pipe(out);
@@ -137,7 +137,7 @@ describe('gulp-gzip', function() {
       });
 
       it('should return file contents as a Buffer while handling threshold', function(done) {
-        gulp.src('files/small.txt')
+        gulp.src('files/big.txt')
           .pipe(gzip({ threshold: '1kb' }))
           .pipe(tap(function(file) {
             file.contents.should.be.instanceof(Buffer);
@@ -225,7 +225,7 @@ describe('gulp-gzip', function() {
           });
         });
 
-        gulp.src('files/large.txt', { buffer: false })
+        gulp.src('files/small.txt', { buffer: false })
           .pipe(rename({ basename: id }))
           .pipe(gzip())
           .pipe(out);
@@ -244,7 +244,7 @@ describe('gulp-gzip', function() {
           });
         });
 
-        gulp.src('files/large.txt', { buffer: false })
+        gulp.src('files/small.txt', { buffer: false })
           .pipe(rename({ basename: id }))
           .pipe(gzip({ append: false }))
           .pipe(out);

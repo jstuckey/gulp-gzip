@@ -7,22 +7,20 @@ var watch   = require('gulp-watch');
 var root = __dirname;
 
 gulp.task('watch', function() {
-  gulp.src(['lib/*', 'gulpfile.js', 'test/*.js'], { read: false })
-    .pipe(watch({ emit: 'all', name: 'Mocha' }, function(files) {
+  gulp.src([ 'lib/*.js' , 'test/test.js' ], { read: false,  })
+    .pipe(watch({ /*emit: 'all',*/ name: 'Mocha', read: false }, function(files) {
       // monkeys are fixing `cwd` for `gulp-mocha`
       // node lives in one process/scope/directory
       process.chdir(root);
 
-      files
-        .pipe(filter('test.js'))
-        .pipe(mocha({ reporter: 'spec' }));
+      gulp.src('test/test.js')
+        .pipe(mocha({ reporter: 'spec', slow: 100 }));
     }));
 });
 
 gulp.task('clean', function() {
   gulp.src([
     'examples/*/tmp',
-    'test/*.txt.gz',
     'test/tmp'
   ]).pipe(clean());
 });
