@@ -1,166 +1,337 @@
-var gzip = require("../");
-var zlib = require("zlib");
-var should = require("should");
-var gulp = require("gulp");
-var es = require("event-stream");
-var fs = require("fs");
-var util = require("util");
-var Stream = require("stream");
+var clean  = require('gulp-clean');
+var fs     = require('fs');
+var gulp   = require('gulp');
+var log    = require('gulp-util').log;
+var gzip   = require('../');
+var nid    = require('nid');
+var rename = require('gulp-rename');
+var should = require('should');
+var Stream = require('stream');
+var tap    = require('gulp-tap');
+var zlib   = require('zlib');
 
-require("mocha");
+// monkeys are fixing cwd for gulp-mocha
+// node lives in one process/scope/directory
+process.chdir('./test');
 
-describe("gulp-gzip", function() {
-	describe("compress", function() {
+describe('gulp-gzip', function() {
+  describe('plugin level', function() {
+    describe('config', function() {
+      it('should have default config', function(done) {
+        var instance = gzip();
+        instance.config.should.eql({ append: true, threshold:  false });
+        done();
+      });
 
-		it("should append gz to the file extension", function(done) {
-			gulp.src("*.txt")
-			.pipe(gzip())
-			.pipe(es.map(function(file, cb) {
-				// Check if file properties end with .gz
-				file.path.should.endWith("gz");
-				file.shortened.should.endWith("gz");
-				cb(null, null);
-				done();
-			}));
-		});
+      it('should merge options with defaults', function(done) {
+        var instance = gzip({ append: false });
+        instance.config.should.eql({ append: false, threshold: false });
+        done();
+      });
 
-		it('should return file contents as a buffer in buffer mode', function(done) {
-			gulp.src("*.txt")
-			.pipe(gzip())
-			.pipe(es.map(function(file, cb) {
-				// Check if file contents is a Buffer object
-				file.contents.should.be.instanceof(Buffer); // should.have.type didn't work
-				cb(null, null);
-				done();
-			}));
-		});
+      it('should set threshold to false while receiving false', function(done) {
+        var instance = gzip({ threshold: false });
+        instance.config.threshold.should.be.false;
+        done();
+      });
 
-		it('should return file contents as a stream in stream mode', function(done) {
-			gulp.src("*.txt", {buffer: false})
-			.pipe(gzip())
-			.pipe(es.map(function(file, cb) {
-				// Check if file contents is a Stream object
-				file.contents.should.be.instanceof(Stream); // should.have.type didn't work
-				cb(null, null);
-				done();
-			}));
-		});
+      it('should set threshold to 150 while receiving true', function(done) {
+        var instance = gzip({ threshold: true });
+        instance.config.threshold.should.eql(150);
+        done();
+      });
 
-		it("should create a .gz file in buffer mode", function(done) {
+      it('should set threshold to Number while receiving Number', function(done) {
+        var instance = gzip({ threshold: 1024 });
+        instance.config.should.have.property('threshold', 1024);
+        done();
+      });
 
-			var outStream = gulp.dest("./")
+      it('should set threshold to 150 while receiving Number < 150', function(done) {
+        var instance = gzip({ threshold: 100 });
+        instance.config.should.have.property('threshold', 150);
+        done();
+      });
 
-			// Capture close event of the write stream so we know when gulp.dest finishes
-			outStream.on("close", function() {
-				// Get the compressed file
-				fs.readFile("./input.txt.gz", function(err, file) {
+      it('should set threshold to Number while receiving String (bytes result)', function(done) {
+        var instance = gzip({ threshold: '1kb' });
+        instance.config.should.have.property('threshold', 1024);
+        done();
+      });
 
-					// console.log(util.inspect(file));
+      it('should set threshold to 150 while receiving String (bytes result < 150)', function(done) {
+        var instance = gzip({ threshold: '1kb' });
+        instance.config.should.have.property('threshold', 1024);
+        done();
+      });
+    });
+  });
 
-					// Check if the file was found
-					should.not.exist(err);
-					should.exist(file);
-					file.should.not.be.empty;
+  describe('handler level', function() {
+    describe('file extension', function() {
+      it('should append .gz to the file extension, by default', function(done) {
+        gulp.src('files/small.txt')
+          .pipe(gzip())
+          .pipe(tap(function(file) {
+            file.path.should.endWith('.gz');
+            done();
+          }));
+      });
 
-					done();
-				});
-			});
+      it('should not append .gz to the file extension receiving { append: false }', function(done) {
+        gulp.src('files/small.txt')
+          .pipe(gzip({ append: false }))
+          .pipe(tap(function(file) {
+            file.path.should.not.endWith('.gz');
+            done();
+          }));
+      });
+    });
 
-			gulp.src("*.txt")
-			.pipe(gzip())
-			.pipe(outStream);
-		});
+    describe('buffer mode', function() {
+      it('should create file with .gz extension, by default', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-		it("should create a .gz file in stream mode", function(done) {
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+            done()
+          });
+        });
 
-			var outStream = gulp.dest("./")
+        gulp.src('files/small.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip())
+          .pipe(out);
+      });
 
-			// Capture close event of the write stream so we know when gulp.dest finishes
-			outStream.on("close", function() {
-				// Get the compressed file
-				fs.readFile("./input.txt.gz", function(err, file) {
+      it('should create file without .gz extension when { append: false }', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-					// console.log(util.inspect(file));
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+            done()
+          });
+        });
 
-					// Check if the file was found
-					should.not.exist(err);
-  					should.exist(file);
-					file.should.not.be.empty;
+        gulp.src('files/small.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ append: false }))
+          .pipe(out);
+      });
 
-					done();
-				});
-			});
+      it('should return file contents as a Buffer', function(done) {
+        gulp.src('files/small.txt')
+          .pipe(gzip())
+          .pipe(tap(function(file) {
+            file.contents.should.be.instanceof(Buffer);
+            done();
+          }));
+      });
 
-			gulp.src("*.txt", {buffer: false})
-			.pipe(gzip())
-			.pipe(outStream);
-		});
+      it('should return file contents as a Buffer while handling threshold', function(done) {
+        gulp.src('files/big.txt')
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(tap(function(file) {
+            file.contents.should.be.instanceof(Buffer);
+            done();
+          }));
+      });
 
-		it("should match uncompressed file with original file in buffer mode", function(done) {
+      it('should match original when result being uncompressed', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-			var outStream = gulp.dest("./")
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            zlib.unzip(file, function(err, buffer) {
+              file = buffer.toString('utf-8', 0, buffer.length);
 
-			// Capture close event of the write stream so we know when gulp.dest finishes
-			outStream.on("close", function() {
+              fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
+                file.should.equal(original);
+                done();
+              });
+            });
+          });
+        });
 
-				// Get the compressed file
-				fs.readFile("./input.txt.gz", function(err, file) {
-					// Uncompress the file
-					zlib.unzip(file, function(err, uncompressedFileBuffer) {
-						// Convert buffer to utf8 string
-						uncompressedFile = uncompressedFileBuffer.toString("utf8", 0, uncompressedFileBuffer.length);
-						// console.log(util.inspect(uncompressedFile));
+        gulp.src('files/small.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip())
+          .pipe(out);
+      });
 
-						// Get original file as utf8 string
-						fs.readFile("./input.txt", {encoding: "utf8"}, function(err, originalFile) {
-							// console.log(util.inspect(originalFile));
+      it('should handle threshold of 1kb by passing through small.txt (<1kb)', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-							// Compare the original file to the uncompressed .gz file
-							originalFile.should.equal(uncompressedFile);
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt', { encoding: 'utf-8' }, function(err, file) {
+            fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
+              file.should.equal(original);
+              done();
+            });
+          });
+        });
 
-							done();
-						});
-					});
-				});
-			});
+        gulp.src('files/small.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(out);
+      });
 
-			gulp.src("*.txt")
-			.pipe(gzip())
-			.pipe(outStream);
-		});
+      it('should handle threshold of 1kb by compressing big.txt (>1kb)', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-		it("should match uncompressed file with original file in stream mode", function(done) {
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            zlib.unzip(file, function(err, buffer) {
+              file = buffer.toString('utf-8');
 
-			var outStream = gulp.dest("./", {buffer: false})
+              fs.readFile('./files/big.txt', { encoding: 'utf-8' }, function(err, original) {
+                file.should.equal(original);
+                done();
+              });
+            });
+          });
+        });
 
-			// Capture close event of the write stream so we know when gulp.dest finishes
-			outStream.on("close", function() {
+        gulp.src('files/big.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(out);
+      });
+    });
 
-				// Get the compressed file
-				fs.readFile("./input.txt.gz", function(err, file) {
-					// Uncompress the file
-					zlib.unzip(file, function(err, uncompressedFileBuffer) {
-						// Convert buffer to utf8 string
-						uncompressedFile = uncompressedFileBuffer.toString("utf8", 0, uncompressedFileBuffer.length);
-						// console.log(util.inspect(uncompressedFile));
+    describe('stream mode', function() {
+      it('should create file with .gz extension, by default', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-						// Get original file as utf8 string
-						fs.readFile("./input.txt", {encoding: "utf8"}, function(err, originalFile) {
-							// console.log(util.inspect(originalFile));
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+            done()
+          });
+        });
 
-							// Compare the original file to the uncompressed .gz file
-							originalFile.should.equal(uncompressedFile);
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(rename({ basename: id }))
+          .pipe(gzip())
+          .pipe(out);
+      });
 
-							done();
-						});
-					});
-				});
-			});
+      it('should create file without .gz extension when { append: false }', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
 
-			gulp.src("*.txt", {buffer: false})
-			.pipe(gzip())
-			.pipe(outStream);
-		});
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+            done()
+          });
+        });
 
-	});
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ append: false }))
+          .pipe(out);
+      });
+
+      it('should return file contents as a Stream', function(done) {
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(gzip())
+          .pipe(tap(function(file) {
+            file.contents.should.be.instanceof(Stream);
+            done();
+          }));
+      });
+
+      it('should return file contents as a Stream while handling threshold', function(done) {
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(tap(function(file) {
+            file.contents.should.be.instanceof(Stream);
+            done();
+          }));
+      });
+
+      it('should match original when result being uncompressed', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
+
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            zlib.unzip(file, function(err, buffer) {
+              file = buffer.toString('utf-8', 0, buffer.length);
+
+              fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
+                file.should.equal(original);
+                done();
+              });
+            });
+          });
+        });
+
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(rename({ basename: id }))
+          .pipe(gzip())
+          .pipe(out);
+      });
+
+      it('should handle threshold of 1kb by passing through small.txt (<1kb)', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
+
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt', { encoding: 'utf-8' }, function(err, file) {
+            fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
+              file.should.equal(original);
+              done();
+            });
+          });
+        });
+
+        gulp.src('files/small.txt', { buffer: false })
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(out);
+      });
+
+      it('should handle threshold of 1kb by compressing big.txt (>1kb)', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
+
+        out.on('close', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            zlib.unzip(file, function(err, buffer) {
+              file = buffer.toString('utf-8');
+
+              fs.readFile('./files/big.txt', { encoding: 'utf-8' }, function(err, original) {
+                file.should.equal(original);
+                done();
+              });
+            });
+          });
+        });
+
+        gulp.src('files/big.txt', { buffer: false })
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: '1kb' }))
+          .pipe(out);
+      });
+    });
+  });
 });
