@@ -1,7 +1,7 @@
 var through2    = require('through2');
 var zlib        = require('zlib');
 var PluginError = require('gulp-util').PluginError;
-var utils		= require('./libs/utils');
+var utils		= require('./lib/utils');
 
 var PLUGIN_NAME = 'gulp-gzip';
 
