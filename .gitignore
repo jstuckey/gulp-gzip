@@ -1,6 +1,5 @@
 node_modules
 .DS_STORE
-gulpfile.js
 examples/**.txt
 !examples/files/*.txt
 examples/**.txt.gz
