@@ -10,14 +10,15 @@ var Stream = require('stream');
 var tap    = require('gulp-tap');
 var zlib   = require('zlib');
 
-// monkeys are fixing cwd for gulp-mocha
 // node lives in one process/scope/directory
 process.chdir('./test');
 
 describe('gulp-gzip', function() {
 
 	describe('plugin level', function() {
+
 		describe('config', function() {
+
 			it('should have default config', function(done) {
 				var instance = gzip();
 				instance.config.should.eql({ append: true, threshold:  false });
@@ -69,7 +70,9 @@ describe('gulp-gzip', function() {
 	});
 
 	describe('handler level', function() {
+
 		describe('file extension', function() {
+
 			it('should append .gz to the file extension, by default', function(done) {
 				gulp.src('files/small.txt')
 					.pipe(gzip())
@@ -90,6 +93,7 @@ describe('gulp-gzip', function() {
 		});
 
 		describe('buffer mode', function() {
+
 			it('should create file with .gz extension, by default', function(done) {
 				var id = nid();
 				var out = gulp.dest('tmp');
@@ -213,6 +217,7 @@ describe('gulp-gzip', function() {
 		});
 
 		describe('stream mode', function() {
+
 			it('should create file with .gz extension, by default', function(done) {
 				var id = nid();
 				var out = gulp.dest('tmp');
