@@ -10,6 +10,7 @@ var Stream = require('stream');
 var tap    = require('gulp-tap');
 var zlib   = require('zlib');
 
+// monkeys are fixing cwd for gulp-mocha
 // node lives in one process/scope/directory
 process.chdir('./test');
 
