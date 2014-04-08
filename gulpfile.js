@@ -7,7 +7,7 @@ var watch   = require('gulp-watch');
 var root = __dirname;
 
 gulp.task('watch', function() {
-  gulp.src([ 'lib/*.js' , 'test/test.js' ], { read: false,  })
+  gulp.src([ 'index.js', 'lib/*.js' , 'test/test.js' ], { read: false,  })
     .pipe(watch({ /*emit: 'all',*/ name: 'Mocha', read: false }, function(files) {
       // monkeys are fixing `cwd` for `gulp-mocha`
       // node lives in one process/scope/directory
