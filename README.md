@@ -5,9 +5,34 @@ Gzip plugin for [gulp](https://github.com/wearefractal/gulp).
 
 #Install
 
+```npm install --save-dev gulp-gzip
+
+#Options
+
+### append `Boolean`
+
+Appends `.gz` file extension if true. Defaults to true.
+
+```javascript
+ gzip({ append: true })
+ ```
+
+### threshold `String|Number|Boolean`
+
+Minimum size required to compress a file. Defaults to false.
+
+```javascript
+gzip({ threshold: '1kb' })
 ```
-npm install --save-dev gulp-gzip
+
+```javascript
+gzip({ threshold: 1024 })
 ```
+
+```javascript
+gzip({ threshold: true })
+```
+
 
 #Examples
 
@@ -16,7 +41,7 @@ var gulp = require("gulp");
 var gzip = require("gulp-gzip");
 
 gulp.task("compress", function() {
-	gulp.src("./dev/scripts/*.js")
+    gulp.src("./dev/scripts/*.js")
 	.pipe(gzip())
 	.pipe(gulp.dest("./public/scripts"));
 });
