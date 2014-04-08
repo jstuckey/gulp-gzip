@@ -5,7 +5,9 @@ Gzip plugin for [gulp](https://github.com/wearefractal/gulp).
 
 #Install
 
-```npm install --save-dev gulp-gzip
+```
+npm install --save-dev gulp-gzip
+```
 
 #Options
 
