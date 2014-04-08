@@ -14,7 +14,7 @@ gulp.task('watch', function() {
       process.chdir(root);
 
       gulp.src('test/test.js')
-        .pipe(mocha({ reporter: 'spec', slow: 100 }));
+        .pipe(mocha({ reporter: 'spec', timeout: 1000 }));
     }));
 });
 
