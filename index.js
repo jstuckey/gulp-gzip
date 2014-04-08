@@ -1,11 +1,11 @@
+'use strict';
+
 var through2    = require('through2');
 var zlib        = require('zlib');
 var PluginError = require('gulp-util').PluginError;
 var utils		= require('./lib/utils');
 
 var PLUGIN_NAME = 'gulp-gzip';
-
-'use strict';
 
 module.exports = function (options) {
 
@@ -48,9 +48,9 @@ module.exports = function (options) {
 				self.push(file);
 				done();
 				return;
-		    }
+			}
 
-		    // Compress the file contents as a buffer
+			// Compress the file contents as a buffer
 			zlib.gzip(newFile.contents, function(err, buffer) {
 
 				if (err) {
@@ -75,18 +75,19 @@ module.exports = function (options) {
 				utils.checkThresholdForStream(
 					file.contents,
 					config.threshold,
-					function() {
+					function(contentStream) {
 						// File size is smaller than the threshold
 						// Pass it along to the next plugin without compressing
+						file.contents = contentStream;
 						self.push(file);
 						done();
 						return;
 					},
-					function() {
-						// File is large enough to compress
+					function(contentStream) {
+						// File size is greater than the threshold
 						// Compress the file contents as a stream
 						var gzipStream = zlib.createGzip();
-						newFile.contents = file.contents.pipe(gzipStream);
+						newFile.contents = contentStream.pipe(gzipStream);
 						self.push(newFile);
 						done();
 					}
@@ -102,4 +103,4 @@ module.exports = function (options) {
 	}
 
 	return stream;
-}
+};
