@@ -12,10 +12,10 @@ module.exports = function (options) {
 	// Combine user defined options with default options
 	var config = utils.merge({ append: true, threshold: false }, options);
 
-	// Create a through2 stream
+	// Create a through2 object stream. This is our plugin export
 	var stream = through2.obj(compress);
 
-	// Expose config object
+	// Expose the config so we can test it
 	stream.config = config;
 
 	function compress(file, enc, done) {
@@ -71,8 +71,8 @@ module.exports = function (options) {
 
 			// Check if the threshold option is set
 			if (config.threshold) {
-				// Check if the stream contents is greater than the threshold
-				utils.checkThresholdForStream(
+				// Check if the stream contents is less than the threshold
+				utils.streamThreshold(
 					file.contents,
 					config.threshold,
 					function(contentStream) {
