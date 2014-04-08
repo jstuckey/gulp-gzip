@@ -10,7 +10,7 @@
   "repository": "https://github.com/jstuckey/gulp-gzip.git",
   "homepage": "https://github.com/jstuckey/gulp-gzip/",
   "author": "Jeremy Stuckey <jeremystuckey@gmail.com>",
-  "main": "lib/gulpGzip.js",
+  "main": "index.js",
   "scripts": {
     "test": "gulp"
   },
