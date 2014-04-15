@@ -32,8 +32,6 @@ module.exports = function (options) {
 			return;
 		}
 
-		if (config.append) file.path += '.gz';
-
 		// Check if file contents is a buffer or a stream
 		if(file.isBuffer()) {
 			// File contents is a buffer
@@ -60,6 +58,7 @@ module.exports = function (options) {
 
 				// Set the compressed file contents
 				file.contents = buffer;
+				if (config.append) file.path += '.gz';
 				self.push(file);
 				done();
 				return;
@@ -86,6 +85,7 @@ module.exports = function (options) {
 						// Compress the file contents as a stream
 						var gzipStream = zlib.createGzip();
 						file.contents = contentStream.pipe(gzipStream);
+						if (config.append) file.path += '.gz';
 						self.push(file);
 						done();
 					}
@@ -94,6 +94,7 @@ module.exports = function (options) {
 				// Compress the file contents as a stream
 				var gzipStream = zlib.createGzip();
 				file.contents = file.contents.pipe(gzipStream);
+				if (config.append) file.path += '.gz';
 				self.push(file);
 				done();
 			}
