@@ -1,3 +1,4 @@
+/*jslint node: true */
 'use strict';
 
 var through2    = require('through2');
@@ -20,6 +21,7 @@ module.exports = function (options) {
 
 	function compress(file, enc, done) {
 
+		/*jshint validthis: true */
 		var self = this;
 
 		// Check for empty file
@@ -29,12 +31,6 @@ module.exports = function (options) {
 			done();
 			return;
 		}
-
-		// Clone the file
-		var newFile = file.clone();
-
-		// Append file extension if the option is set
-		if (config.append) newFile.path += '.gz';
 
 		// Check if file contents is a buffer or a stream
 		if(file.isBuffer()) {
@@ -51,7 +47,7 @@ module.exports = function (options) {
 			}
 
 			// Compress the file contents as a buffer
-			zlib.gzip(newFile.contents, function(err, buffer) {
+			zlib.gzip(file.contents, function(err, buffer) {
 
 				if (err) {
 					var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
@@ -61,8 +57,9 @@ module.exports = function (options) {
 				}
 
 				// Set the compressed file contents
-				newFile.contents = buffer;
-				self.push(newFile);
+				file.contents = buffer;
+				if (config.append) file.path += '.gz';
+				self.push(file);
 				done();
 				return;
 			});
@@ -87,16 +84,18 @@ module.exports = function (options) {
 						// File size is greater than the threshold
 						// Compress the file contents as a stream
 						var gzipStream = zlib.createGzip();
-						newFile.contents = contentStream.pipe(gzipStream);
-						self.push(newFile);
+						file.contents = contentStream.pipe(gzipStream);
+						if (config.append) file.path += '.gz';
+						self.push(file);
 						done();
 					}
 				);
 			} else {
 				// Compress the file contents as a stream
 				var gzipStream = zlib.createGzip();
-				newFile.contents = file.contents.pipe(gzipStream);
-				self.push(newFile);
+				file.contents = file.contents.pipe(gzipStream);
+				if (config.append) file.path += '.gz';
+				self.push(file);
 				done();
 			}
 		}
