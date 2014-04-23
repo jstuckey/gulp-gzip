@@ -26,7 +26,8 @@
   "dependencies": {
     "bytes": "^0.3.0",
     "gulp-util": "^2.2.14",
-    "through2": "^0.4.1"
+    "through2": "^0.4.1",
+    "stream-to-array": "~1.0.0"
   },
   "devDependencies": {
     "gulp": "^3.6.0",
