@@ -112,7 +112,7 @@ describe('gulp-gzip', function() {
 						should.not.exist(err);
 						should.exist(file);
 						file.should.not.be.empty;
-						done()
+						done();
 					});
 				});
 
@@ -131,7 +131,7 @@ describe('gulp-gzip', function() {
 						should.not.exist(err);
 						should.exist(file);
 						file.should.not.be.empty;
-						done()
+						done();
 					});
 				});
 
@@ -279,7 +279,7 @@ describe('gulp-gzip', function() {
 						should.not.exist(err);
 						should.exist(file);
 						file.should.not.be.empty;
-						done()
+						done();
 					});
 				});
 
@@ -298,7 +298,7 @@ describe('gulp-gzip', function() {
 						should.not.exist(err);
 						should.exist(file);
 						file.should.not.be.empty;
-						done()
+						done();
 					});
 				});
 
