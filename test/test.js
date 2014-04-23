@@ -223,6 +223,49 @@ describe('gulp-gzip', function() {
 					.pipe(gzip({ threshold: '1kb' }))
 					.pipe(out);
 			});
+
+			it('should handle gzipOptions with compression level', function(done) {
+				var id_lowest_compression = nid();
+				var id_highest_compression = nid();
+
+				var out_lowest_compression = gulp.dest('tmp');
+				var out_highest_compression = gulp.dest('tmp');
+
+				var size_lowest_compression = 0;
+				var size_highest_compression = 0;
+
+				out_lowest_compression.on('close', function() {
+					fs.stat('./tmp/' + id_lowest_compression + '.txt.gz', function (err, stats) {
+						size_lowest_compression = stats.size;
+
+						if (size_highest_compression > 0) {
+							size_highest_compression.should.be.lessThan(size_lowest_compression);
+							done();
+						}
+					});
+				});
+
+				out_highest_compression.on('close', function() {
+					fs.stat('./tmp/' + id_highest_compression + '.txt.gz', function (err, stats) {
+						size_highest_compression = stats.size;
+
+						if (size_lowest_compression > 0) {
+							size_highest_compression.should.be.lessThan(size_lowest_compression);
+							done();
+						}
+					});
+				});
+
+				gulp.src('files/big.txt')
+					.pipe(rename({ basename: id_lowest_compression }))
+					.pipe(gzip({ gzipOptions: { level: 1 } }))
+					.pipe(out_lowest_compression);
+
+				gulp.src('files/big.txt')
+					.pipe(rename({ basename: id_highest_compression }))
+					.pipe(gzip({ gzipOptions: { level: 9 } }))
+					.pipe(out_highest_compression);
+			});
 		});
 
 		describe('stream mode', function() {
