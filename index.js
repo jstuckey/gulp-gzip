@@ -3,8 +3,10 @@
 
 var through2    = require('through2');
 var zlib        = require('zlib');
+var Readable    = require('stream').Readable;
 var PluginError = require('gulp-util').PluginError;
 var utils       = require('./lib/utils');
+var toArray     = require('stream-to-array');
 
 var PLUGIN_NAME = 'gulp-gzip';
 
@@ -47,7 +49,19 @@ module.exports = function (options) {
 			}
 
 			// Compress the file contents as a buffer
-			zlib.gzip(file.contents, function(err, buffer) {
+
+			// Create a readable stream out of the file contents buffer
+			var rs = new Readable({ objectMode: true });
+			rs._read = function() {
+				rs.push(file.contents);
+				rs.push(null);
+			};
+
+			var gzipStream = zlib.createGzip(config.gzipOptions);
+			rs.pipe(gzipStream);
+
+			// Turn gzip stream back into a buffer
+			toArray(gzipStream, function (err, chunks) {
 
 				if (err) {
 					var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
@@ -57,12 +71,13 @@ module.exports = function (options) {
 				}
 
 				// Set the compressed file contents
-				file.contents = buffer;
+				file.contents = Buffer.concat(chunks);
 				if (config.append) file.path += '.gz';
 				self.push(file);
 				done();
 				return;
 			});
+
 		} else {
 			// File contents is a stream
 
