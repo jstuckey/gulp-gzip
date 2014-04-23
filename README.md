@@ -37,7 +37,7 @@ gzip({ threshold: true })
 
 ### gzipOptions `Object`
 
-Options object to pass through to zlib.Gzip. [More information](http://nodejs.org/api/zlib.html#zlib_options).
+Options object to pass through to zlib.Gzip. See [zlib documentation](http://nodejs.org/api/zlib.html#zlib_options) for more information.
 
 ```javascript
 gzip({ gzipOptions: { level: 9 } })
