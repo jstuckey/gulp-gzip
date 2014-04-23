@@ -47,7 +47,7 @@ module.exports = function (options) {
 			}
 
 			// Compress the file contents as a buffer
-			zlib.gzip(file.contents, config.gzipOptions, function(err, buffer) {
+			zlib.gzip(file.contents, function(err, buffer) {
 
 				if (err) {
 					var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
