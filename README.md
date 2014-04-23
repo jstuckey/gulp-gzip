@@ -35,6 +35,17 @@ gzip({ threshold: 1024 })
 gzip({ threshold: true })
 ```
 
+### gzipOptions `Object`
+
+Options object to pass through to zlib.Gzip. [More information](http://nodejs.org/api/zlib.html#zlib_options).
+
+```javascript
+gzip({ gzipOptions: { level: 9 } })
+```
+
+```javascript
+gzip({ gzipOptions: { memLevel: 1 } })
+```
 
 #Examples
 

@@ -11,7 +11,7 @@ var PLUGIN_NAME = 'gulp-gzip';
 module.exports = function (options) {
 
 	// Combine user defined options with default options
-	var config = utils.merge({ append: true, threshold: false }, options);
+	var config = utils.merge({ append: true, threshold: false, gzipOptions: {} }, options);
 
 	// Create a through2 object stream. This is our plugin export
 	var stream = through2.obj(compress);
@@ -47,7 +47,7 @@ module.exports = function (options) {
 			}
 
 			// Compress the file contents as a buffer
-			zlib.gzip(file.contents, function(err, buffer) {
+			zlib.gzip(file.contents, config.gzipOptions, function(err, buffer) {
 
 				if (err) {
 					var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
@@ -83,7 +83,7 @@ module.exports = function (options) {
 					function(contentStream) {
 						// File size is greater than the threshold
 						// Compress the file contents as a stream
-						var gzipStream = zlib.createGzip();
+						var gzipStream = zlib.createGzip(config.gzipOptions);
 						file.contents = contentStream.pipe(gzipStream);
 						if (config.append) file.path += '.gz';
 						self.push(file);
@@ -92,7 +92,7 @@ module.exports = function (options) {
 				);
 			} else {
 				// Compress the file contents as a stream
-				var gzipStream = zlib.createGzip();
+				var gzipStream = zlib.createGzip(config.gzipOptions);
 				file.contents = file.contents.pipe(gzipStream);
 				if (config.append) file.path += '.gz';
 				self.push(file);

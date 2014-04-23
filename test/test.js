@@ -22,13 +22,13 @@ describe('gulp-gzip', function() {
 
 			it('should have default config', function(done) {
 				var instance = gzip();
-				instance.config.should.eql({ append: true, threshold:  false });
+				instance.config.should.eql({ append: true, gzipOptions: {}, threshold:  false });
 				done();
 			});
 
 			it('should merge options with defaults', function(done) {
 				var instance = gzip({ append: false });
-				instance.config.should.eql({ append: false, threshold: false });
+				instance.config.should.eql({ append: false, gzipOptions: {}, threshold: false });
 				done();
 			});
 
@@ -65,6 +65,14 @@ describe('gulp-gzip', function() {
 			it('should set threshold to 150 while receiving String (bytes result < 150)', function(done) {
 				var instance = gzip({ threshold: '1kb' });
 				instance.config.should.have.property('threshold', 1024);
+				done();
+			});
+
+			it('should set gzipOptions', function(done) {
+				var instance = gzip({ gzipOptions: { level: 9, memLevel: 1} });
+				instance.config.should.have.property('gzipOptions');
+				instance.config.gzipOptions.should.have.property('level', 9);
+				instance.config.gzipOptions.should.have.property('memLevel', 1);
 				done();
 			});
 		});
@@ -338,6 +346,49 @@ describe('gulp-gzip', function() {
 					.pipe(rename({ basename: id }))
 					.pipe(gzip({ threshold: '1kb' }))
 					.pipe(out);
+			});
+
+			it('should handle gzipOptions with compression level', function(done) {
+				var id_lowest_compression = nid();
+				var id_highest_compression = nid();
+
+				var out_lowest_compression = gulp.dest('tmp');
+				var out_highest_compression = gulp.dest('tmp');
+
+				var size_lowest_compression = 0;
+				var size_highest_compression = 0;
+
+				out_lowest_compression.on('close', function() {
+					fs.stat('./tmp/' + id_lowest_compression + '.txt.gz', function (err, stats) {
+						size_lowest_compression = stats.size;
+
+						if (size_highest_compression > 0) {
+							size_highest_compression.should.be.lessThan(size_lowest_compression);
+							done();
+						}
+					});
+				});
+
+				out_highest_compression.on('close', function() {
+					fs.stat('./tmp/' + id_highest_compression + '.txt.gz', function (err, stats) {
+						size_highest_compression = stats.size;
+
+						if (size_lowest_compression > 0) {
+							size_highest_compression.should.be.lessThan(size_lowest_compression);
+							done();
+						}
+					});
+				});
+
+				gulp.src('files/big.txt', { buffer: false })
+					.pipe(rename({ basename: id_lowest_compression }))
+					.pipe(gzip({ gzipOptions: { level: 1 } }))
+					.pipe(out_lowest_compression);
+
+				gulp.src('files/big.txt', { buffer: false })
+					.pipe(rename({ basename: id_highest_compression }))
+					.pipe(gzip({ gzipOptions: { level: 9 } }))
+					.pipe(out_highest_compression);
 			});
 		});
 	});
