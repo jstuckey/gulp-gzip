@@ -2,11 +2,10 @@
 'use strict';
 
 var through2    = require('through2');
-var zlib        = require('zlib');
-var Readable    = require('stream').Readable;
 var PluginError = require('gulp-util').PluginError;
 var utils       = require('./lib/utils');
-var toArray     = require('stream-to-array');
+var bufferMode  = require('./lib/bufferMode');
+var streamMode  = require('./lib/streamMode');
 
 var PLUGIN_NAME = 'gulp-gzip';
 
@@ -34,85 +33,27 @@ module.exports = function (options) {
 			return;
 		}
 
+		// Call when finished with compression
+		var finished = function(err, contents, wasCompressed) {
+			if (err) {
+				var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
+				self.emit('error', error);
+				done();
+				return;
+			}
+
+			if (config.append && wasCompressed) file.path += '.gz';
+			file.contents = contents;
+			self.push(file);
+			done();
+			return;
+		};
+
 		// Check if file contents is a buffer or a stream
 		if(file.isBuffer()) {
-			// File contents is a buffer
-
-			// Check if the threshold option is set
-			// If true, check if the buffer length is greater than the threshold
-			if (config.threshold && file.contents.length < config.threshold) {
-				// File size is smaller than the threshold
-				// Pass it along to the next plugin without compressing
-				self.push(file);
-				done();
-				return;
-			}
-
-			// Compress the file contents as a buffer
-
-			// Create a readable stream out of the file contents buffer
-			var rs = new Readable({ objectMode: true });
-			rs._read = function() {
-				rs.push(file.contents);
-				rs.push(null);
-			};
-
-			var gzipStream = zlib.createGzip(config.gzipOptions);
-			rs.pipe(gzipStream);
-
-			// Turn gzip stream back into a buffer
-			toArray(gzipStream, function (err, chunks) {
-
-				if (err) {
-					var error = new PluginError(PLUGIN_NAME, err, { showStack: true });
-					self.emit('error', error);
-					done();
-					return;
-				}
-
-				// Set the compressed file contents
-				file.contents = Buffer.concat(chunks);
-				if (config.append) file.path += '.gz';
-				self.push(file);
-				done();
-				return;
-			});
-
+			bufferMode(file.contents, config, finished);
 		} else {
-			// File contents is a stream
-
-			// Check if the threshold option is set
-			if (config.threshold) {
-				// Check if the stream contents is less than the threshold
-				utils.streamThreshold(
-					file.contents,
-					config.threshold,
-					function(contentStream) {
-						// File size is smaller than the threshold
-						// Pass it along to the next plugin without compressing
-						file.contents = contentStream;
-						self.push(file);
-						done();
-						return;
-					},
-					function(contentStream) {
-						// File size is greater than the threshold
-						// Compress the file contents as a stream
-						var gzipStream = zlib.createGzip(config.gzipOptions);
-						file.contents = contentStream.pipe(gzipStream);
-						if (config.append) file.path += '.gz';
-						self.push(file);
-						done();
-					}
-				);
-			} else {
-				// Compress the file contents as a stream
-				var gzipStream = zlib.createGzip(config.gzipOptions);
-				file.contents = file.contents.pipe(gzipStream);
-				if (config.append) file.path += '.gz';
-				self.push(file);
-				done();
-			}
+			streamMode(file.contents, config, finished);
 		}
 	}
 
