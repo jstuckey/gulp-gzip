@@ -39,6 +39,8 @@
     "gulp-watch": "^0.5.3",
     "mocha": "^1.18.2",
     "nid": "^0.3.2",
-    "should": "^3.2.0-beta1"
+    "should": "^3.2.0-beta1",
+    "gulp-jshint": "~1.5.4",
+    "jshint-stylish": "~0.1.5"
   }
 }
