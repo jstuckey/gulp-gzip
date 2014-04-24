@@ -3,6 +3,8 @@ var filter  = require('gulp-filter');
 var gulp    = require('gulp');
 var mocha   = require('gulp-mocha');
 var watch   = require('gulp-watch');
+var jshint  = require('gulp-jshint');
+var stylish = require('jshint-stylish');
 
 var root = __dirname;
 
@@ -23,6 +25,12 @@ gulp.task('clean', function() {
     'examples/*/tmp',
     'test/tmp'
   ]).pipe(clean());
+});
+
+gulp.task('lint', function() {
+  gulp.src([ 'index.js', 'test/test.js', 'lib/*.js' ])
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish));
 });
 
 gulp.task('default', ['watch']);
