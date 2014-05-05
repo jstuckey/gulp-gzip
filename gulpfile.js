@@ -32,7 +32,6 @@ gulp.task('test', function() {
 
 gulp.task('watch', function() {
   watch({
-    emit: 'all',
     glob: [ 'index.js', 'lib/*.js' , 'test/test.js' ],
     read: false
   }, ['clean', 'lint', 'test'])
