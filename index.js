@@ -8,7 +8,7 @@ var utils       = require('./lib/utils');
 var bufferMode  = require('./lib/bufferMode');
 var streamMode  = require('./lib/streamMode');
 
-var gzipabble = ['.css', '.js', '.txt', '.json', '.eot', '.ttf', '.xml'];
+var gzipabble = ['.css', '.js', '.txt', '.json', '.eot', '.ttf', '.xml', '.svg'];
 
 var PLUGIN_NAME = 'gulp-gzip';
 
