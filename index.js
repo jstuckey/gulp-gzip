@@ -1,11 +1,14 @@
 /*jslint node: true */
 'use strict';
 
+var path        = require('path');
 var through2    = require('through2');
 var PluginError = require('gulp-util').PluginError;
 var utils       = require('./lib/utils');
 var bufferMode  = require('./lib/bufferMode');
 var streamMode  = require('./lib/streamMode');
+
+var gzipabble = ['.css', '.js', '.txt', '.json', '.eot', '.ttf', '.xml', '.svg'];
 
 var PLUGIN_NAME = 'gulp-gzip';
 
@@ -23,7 +26,8 @@ module.exports = function (options) {
 	function compress(file, enc, done) {
 
 		/*jshint validthis: true */
-		var self = this;
+		var self    = this;
+		var fileExt = path.extname(file.path);
 
 		// Check for empty file
 		if (file.isNull()) {
@@ -31,6 +35,13 @@ module.exports = function (options) {
 			self.push(file);
 			done();
 			return;
+		}
+
+		if (gzipabble.indexOf(fileExt) === -1) {
+			// only gzip appropriate files
+			self.push(file);
+			done();
+			return;	
 		}
 
 		// Call when finished with compression
