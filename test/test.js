@@ -107,7 +107,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						should.not.exist(err);
 						should.exist(file);
@@ -126,7 +126,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt', function(err, file) {
 						should.not.exist(err);
 						should.exist(file);
@@ -163,7 +163,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						zlib.unzip(file, function(err, buffer) {
 							file = buffer.toString('utf-8', 0, buffer.length);
@@ -186,7 +186,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt', { encoding: 'utf-8' }, function(err, file) {
 						fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
 							file.should.equal(original);
@@ -205,7 +205,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						zlib.unzip(file, function(err, buffer) {
 							file = buffer.toString('utf-8');
@@ -231,7 +231,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						should.not.exist(err);
 						should.exist(file);
@@ -250,7 +250,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt', function(err, file) {
 						should.not.exist(err);
 						should.exist(file);
@@ -287,7 +287,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						zlib.unzip(file, function(err, buffer) {
 							file = buffer.toString('utf-8', 0, buffer.length);
@@ -310,7 +310,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt', { encoding: 'utf-8' }, function(err, file) {
 						fs.readFile('./files/small.txt', { encoding: 'utf-8' }, function(err, original) {
 							file.should.equal(original);
@@ -329,7 +329,7 @@ describe('gulp-gzip', function() {
 				var id = nid();
 				var out = gulp.dest('tmp');
 
-				out.on('close', function() {
+				out.on('end', function() {
 					fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
 						zlib.unzip(file, function(err, buffer) {
 							file = buffer.toString('utf-8');
@@ -375,7 +375,7 @@ describe('gulp-gzip', function() {
 				var size_lowest_compression = 0;
 				var size_highest_compression = 0;
 
-				out_lowest_compression.on('close', function() {
+				out_lowest_compression.on('end', function() {
 					fs.stat('./tmp/' + id_lowest_compression + '.txt.gz', function (err, stats) {
 						size_lowest_compression = stats.size;
 
@@ -386,7 +386,7 @@ describe('gulp-gzip', function() {
 					});
 				});
 
-				out_highest_compression.on('close', function() {
+				out_highest_compression.on('end', function() {
 					fs.stat('./tmp/' + id_highest_compression + '.txt.gz', function (err, stats) {
 						size_highest_compression = stats.size;
 
@@ -418,7 +418,7 @@ describe('gulp-gzip', function() {
 				var size_lowest_compression = 0;
 				var size_highest_compression = 0;
 
-				out_lowest_compression.on('close', function() {
+				out_lowest_compression.on('end', function() {
 					fs.stat('./tmp/' + id_lowest_compression + '.txt.gz', function (err, stats) {
 						size_lowest_compression = stats.size;
 
@@ -429,7 +429,7 @@ describe('gulp-gzip', function() {
 					});
 				});
 
-				out_highest_compression.on('close', function() {
+				out_highest_compression.on('end', function() {
 					fs.stat('./tmp/' + id_highest_compression + '.txt.gz', function (err, stats) {
 						size_highest_compression = stats.size;
 
