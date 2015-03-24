@@ -349,7 +349,7 @@ describe('gulp-gzip', function() {
 			});
 		});
 
-		describe('preserve file properties', function() {
+		describe('file properties', function() {
 			it('should not lose any properties from the Vinyl file', function(done) {
 				gulp.src('files/small.txt')
 					.pipe(tap(function(file) {
@@ -358,6 +358,16 @@ describe('gulp-gzip', function() {
 					.pipe(gzip())
 					.pipe(tap(function(file) {
 						file.should.have.property('test', 'test');
+						done();
+					}));
+			});
+
+			it('should set `contentEncoding`', function(done) {
+				gulp.src('files/small.txt')
+					.pipe(gzip())
+					.pipe(tap(function(file) {
+						file.should.have.property('contentEncoding');
+						file.contentEncoding.should.containEql('gzip');
 						done();
 					}));
 			});
