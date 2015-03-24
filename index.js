@@ -42,7 +42,16 @@ module.exports = function (options) {
 				return;
 			}
 
-			if (config.append && wasCompressed) file.path += '.gz';
+			if (wasCompressed) {
+				if (file.contentEncoding) {
+					file.contentEncoding.push('gzip');
+				} else {
+					file.contentEncoding = [ 'gzip' ];
+				}
+				if (config.append) {
+					file.path += '.gz';
+				}
+			}
 			file.contents = contents;
 			self.push(file);
 			done();
@@ -50,7 +59,7 @@ module.exports = function (options) {
 		};
 
 		// Check if file contents is a buffer or a stream
-		if(file.isBuffer()) {
+		if (file.isBuffer()) {
 			bufferMode(file.contents, config, finished);
 		} else {
 			streamMode(file.contents, config, finished);
