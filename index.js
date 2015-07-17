@@ -48,7 +48,11 @@ module.exports = function (options) {
         } else {
           file.contentEncoding = [ 'gzip' ];
         }
-        if (config.append) {
+        if (config.extension) {
+            file.path += '.' + config.extension;
+        } else if (config.preExtension) {
+            file.path = file.path.replace(/(\.[^\.]+)$/, '.' + config.preExtension + '$1');
+        } else if (config.append) {
           file.path += '.gz';
         }
       }
