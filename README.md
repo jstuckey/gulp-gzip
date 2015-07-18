@@ -17,7 +17,26 @@ Appends `.gz` file extension if true. Defaults to true.
 
 ```javascript
  gzip({ append: true })
- ```
+```
+`filename.txt` becomes `filename.txt.gz`.
+
+### extension `String`
+
+Appends an arbitrary extension to the filename. Disables `append` and `preExtension` options.
+
+```javascript
+ gzip({ extension: 'zip' }) // note that the `.` should not be included in the extension
+```
+`filename.txt` becomes `filename.txt.zip`.
+
+### preExtension `String`
+
+Appends an arbitrary pre-extension to the filename. Disables `append` and `extension` options.
+
+```javascript
+ gzip({ preExtension: 'gz' }) // note that the `.` should not be included in the extension
+```
+`filename.txt` becomes `filename.gz.txt`.
 
 ### threshold `String|Number|Boolean`
 

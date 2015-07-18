@@ -99,6 +99,24 @@ describe('gulp-gzip', function() {
             done();
           }));
       });
+
+      it('should accept an arbitrary extension with the `extension` option', function(done) {
+          gulp.src('files/small.txt')
+            .pipe(gzip({ extension: 'zip' }))
+            .pipe(tap(function(file) {
+              file.path.should.endWith('.zip');
+              done();
+            }));
+      });
+
+      it('should accept an arbitrary pre-extension with the `preExtension` option', function(done) {
+          gulp.src('files/small.txt')
+            .pipe(gzip({ preExtension: 'gz' }))
+            .pipe(tap(function(file) {
+              file.path.should.endWith('.gz.txt');
+              done();
+            }));
+      });
     });
 
     describe('buffer mode', function() {
