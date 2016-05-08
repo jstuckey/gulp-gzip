@@ -119,6 +119,74 @@ describe('gulp-gzip', function() {
       });
     });
 
+    describe('delete mode', function() {
+
+      it('should not delete existing gzipped files when { deleteMode : false }', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
+
+        out.on('end', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+
+            var out = gulp.dest('tmp');
+            out.on('end', function() {
+              fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+                should.not.exist(err);
+                should.exist(file);
+                file.should.not.be.empty;
+                done();
+              });
+            });
+
+            gulp.src('files/small.txt')
+              .pipe(rename({ basename: id }))
+              .pipe(gzip({ threshold: 1024 }))
+              .pipe(out);
+          });
+        });
+
+        gulp.src('files/big.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: 1024 }))
+          .pipe(out);
+      });
+
+      it('should delete existing gzipped files if the files changed from big.txt (over threshold) to small.txt (under threshold) when { deleteMode : true }', function(done) {
+        var id = nid();
+        var out = gulp.dest('tmp');
+
+        out.on('end', function() {
+          fs.readFile('./tmp/' + id + '.txt.gz', function(err, file) {
+            should.not.exist(err);
+            should.exist(file);
+            file.should.not.be.empty;
+
+            var out = gulp.dest('tmp');
+
+            out.on('end', function() {
+              fs.exists('./tmp/' + id + '.txt.gz', function(exists) {
+                exists.should.be.false;
+                done();
+              });
+            });
+
+            gulp.src('files/small.txt')
+              .pipe(rename({ basename: id }))
+              .pipe(gzip({ threshold: 1024, deleteMode: 'tmp' }))
+              .pipe(out);
+          });
+        });
+
+        gulp.src('files/big.txt')
+          .pipe(rename({ basename: id }))
+          .pipe(gzip({ threshold: 1024, deleteMode: 'tmp' }))
+          .pipe(out);
+      });
+    });
+
     describe('buffer mode', function() {
 
       it('should create file with .gz extension, by default', function(done) {

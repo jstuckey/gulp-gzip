@@ -66,6 +66,28 @@ gzip({ gzipOptions: { level: 9 } })
 gzip({ gzipOptions: { memLevel: 1 } })
 ```
 
+### deleteMode `String|Function`
+
+Some webserver modules such as nginx `gzip_static` looks for `example.html.gz`, serve it if it exists, else the original `example.html` will be served.
+
+For instance, if `example.html` was 2kb, it would be gzipped and `example.html.gz` was created.
+
+However, if later `example.html` is modified to content less than the threshold, gulp-gzip will only bypass it. Hence, you will end up with a new `example.html` yet old `example.html.gz`. Your webserver will continue to serve old content (`example.html.gz`).
+
+Using this option, gulp-gzip will remove `example.html.gz`.
+
+It takes in the same argument as `gulp.dest` as in `gulp.dest('mydest')`, so it knows where to look for the gzipped files. Defaults to `undefined`.
+
+```javascript
+gzip({ threshold: 1024, deleteMode: 'mydest' })
+```
+
+If you have `cwd` as in `gulp.dest('mydest', { cwd: mycwd })`. You can configure it using `deleteModeCwd`.
+
+```javascript
+gzip({ threshold: 1024, deleteMode: 'mydest', deleteModeCwd: mycwd })
+```
+
 #Examples
 
 ```javascript
