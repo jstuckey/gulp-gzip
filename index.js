@@ -1,8 +1,11 @@
 /*jslint node: true */
 'use strict';
 
+var fs          = require('fs');
+var path        = require('path');
+var gutil       = require('gulp-util');
 var through2    = require('through2');
-var PluginError = require('gulp-util').PluginError;
+var PluginError = gutil.PluginError;
 var utils       = require('./lib/utils');
 var bufferMode  = require('./lib/bufferMode');
 var streamMode  = require('./lib/streamMode');
@@ -42,23 +45,50 @@ module.exports = function (options) {
         return;
       }
 
+      var complete = function() {
+        file.contents = contents;
+        self.push(file);
+        done();
+      };
+
+      var getFixedPath = function(filepath) {
+        if (config.extension) {
+          filepath += '.' + config.extension;
+        } else if (config.preExtension) {
+          filepath = filepath.replace(/(\.[^\.]+)$/, '.' + config.preExtension + '$1');
+        } else if (config.append) {
+          filepath += '.gz';
+        }
+
+        return filepath;
+      };
+
       if (wasCompressed) {
         if (file.contentEncoding) {
           file.contentEncoding.push('gzip');
         } else {
           file.contentEncoding = [ 'gzip' ];
         }
-        if (config.extension) {
-            file.path += '.' + config.extension;
-        } else if (config.preExtension) {
-            file.path = file.path.replace(/(\.[^\.]+)$/, '.' + config.preExtension + '$1');
-        } else if (config.append) {
-          file.path += '.gz';
-        }
+
+        file.path = getFixedPath(file.path);
+        complete();
+      } else if (config.deleteMode) {
+        var cwd = path.resolve(config.deleteModeCwd || process.cwd());
+        var directory = typeof config.deleteMode === 'string' ? config.deleteMode : config.deleteMode(file);
+        var filepath = path.resolve(cwd, directory, getFixedPath(file.relative));
+
+        fs.exists(filepath, function(exists) {
+          if(exists) {
+            gutil.log(gutil.colors.green('Gzipped file ' + filepath + ' deleted'));
+            fs.unlink(filepath, complete);
+          } else {
+            complete();
+          }
+        });
+      } else {
+        complete();
       }
-      file.contents = contents;
-      self.push(file);
-      done();
+
       return;
     };
 
