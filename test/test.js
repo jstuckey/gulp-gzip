@@ -20,13 +20,23 @@ describe('gulp-gzip', function() {
 
     it('should have default config', function(done) {
       var instance = gzip();
-      instance.config.should.eql({ append: true, gzipOptions: {}, threshold:  false });
+      instance.config.should.eql({
+        append: true,
+        gzipOptions: {},
+        ignoreLargerCompressedFile: false,
+        threshold:  false
+      });
       done();
     });
 
     it('should merge options with defaults', function(done) {
       var instance = gzip({ append: false });
-      instance.config.should.eql({ append: false, gzipOptions: {}, threshold: false });
+      instance.config.should.eql({
+        append: false,
+        gzipOptions: {},
+        ignoreLargerCompressedFile: false,
+        threshold:  false
+      });
       done();
     });
   });
@@ -449,6 +459,34 @@ describe('gulp-gzip', function() {
         .pipe(rename({ basename: id }))
         .pipe(gzip())
         .pipe(out);
+    });
+  });
+
+  describe('ignore larger compressed files', function() {
+    it('handles buffers', function(done) {
+      var originalBuffer;
+      gulp.src('files/too_small.txt')
+        .pipe(tap(function(file) {
+          originalBuffer = file.contents;
+        }))
+        .pipe(gzip({ ignoreLargerCompressedFile: true }))
+        .pipe(tap(function(file) {
+          file.contents.should.equal(originalBuffer);
+          done();
+        }));
+    });
+
+    it('handles streams', function(done) {
+      var originalStream;
+      gulp.src('files/too_small.txt', { buffer: false })
+        .pipe(tap(function(file) {
+          originalStream = file.contents;
+        }))
+        .pipe(gzip({ ignoreLargerCompressedFile: true }))
+        .pipe(tap(function(file) {
+          file.contents.should.equal(originalStream);
+          done();
+        }));
     });
   });
 });
