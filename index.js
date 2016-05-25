@@ -7,8 +7,7 @@ var gutil       = require('gulp-util');
 var through2    = require('through2');
 var PluginError = gutil.PluginError;
 var utils       = require('./lib/utils');
-var bufferMode  = require('./lib/bufferMode');
-var streamMode  = require('./lib/streamMode');
+var compress    = require('./lib/compress.js');
 
 var PLUGIN_NAME = 'gulp-gzip';
 
@@ -18,12 +17,12 @@ module.exports = function (options) {
   var config = utils.merge({ append: true, threshold: false, gzipOptions: {} }, options);
 
   // Create a through2 object stream. This is our plugin export
-  var stream = through2.obj(compress);
+  var stream = through2.obj(gulpGzip);
 
   // Expose the config so we can test it
   stream.config = config;
 
-  function compress(file, enc, done) {
+  function gulpGzip(file, enc, done) {
 
     /*jshint validthis: true */
     var self = this;
@@ -92,12 +91,7 @@ module.exports = function (options) {
       return;
     };
 
-    // Check if file contents is a buffer or a stream
-    if (file.isBuffer()) {
-      bufferMode(file.contents, config, finished);
-    } else {
-      streamMode(file.contents, config, finished);
-    }
+    compress(file.contents, config, finished);
   }
 
   return stream;
