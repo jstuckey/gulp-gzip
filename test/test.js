@@ -23,7 +23,7 @@ describe('gulp-gzip', function() {
       instance.config.should.eql({
         append: true,
         gzipOptions: {},
-        ignoreLargerCompressedFile: false,
+        skipGrowingFiles: false,
         threshold:  false
       });
       done();
@@ -34,7 +34,7 @@ describe('gulp-gzip', function() {
       instance.config.should.eql({
         append: false,
         gzipOptions: {},
-        ignoreLargerCompressedFile: false,
+        skipGrowingFiles: false,
         threshold:  false
       });
       done();
@@ -462,14 +462,14 @@ describe('gulp-gzip', function() {
     });
   });
 
-  describe('ignore larger compressed files', function() {
+  describe('skip files that get larger after compression', function() {
     it('handles buffers', function(done) {
       var originalBuffer;
       gulp.src('files/too_small.txt')
         .pipe(tap(function(file) {
           originalBuffer = file.contents;
         }))
-        .pipe(gzip({ ignoreLargerCompressedFile: true }))
+        .pipe(gzip({ skipGrowingFiles: true }))
         .pipe(tap(function(file) {
           file.contents.should.equal(originalBuffer);
           done();
@@ -482,7 +482,7 @@ describe('gulp-gzip', function() {
         .pipe(tap(function(file) {
           originalStream = file.contents;
         }))
-        .pipe(gzip({ ignoreLargerCompressedFile: true }))
+        .pipe(gzip({ skipGrowingFiles: true }))
         .pipe(tap(function(file) {
           file.contents.should.equal(originalStream);
           done();

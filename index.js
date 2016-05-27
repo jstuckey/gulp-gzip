@@ -18,7 +18,7 @@ module.exports = function (options) {
     append: true,
     threshold: false,
     gzipOptions: {},
-    ignoreLargerCompressedFile: false
+    skipGrowingFiles: false
   };
   var config = utils.merge(defaultConfig, options);
 
