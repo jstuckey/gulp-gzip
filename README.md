@@ -88,6 +88,14 @@ If you have `cwd` as in `gulp.dest('mydest', { cwd: mycwd })`. You can configure
 gzip({ threshold: 1024, deleteMode: 'mydest', deleteModeCwd: mycwd })
 ```
 
+### skipGrowingFiles `Boolean`
+
+Some files actually get larger after compression. If true, this option passes along the original, uncompressed file if compression increases the file size. Defaults to false.
+
+```javascript
+ gzip({ skipGrowingFiles : true })
+```
+
 #Examples
 
 ```javascript

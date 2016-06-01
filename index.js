@@ -14,7 +14,13 @@ var PLUGIN_NAME = 'gulp-gzip';
 module.exports = function (options) {
 
   // Combine user defined options with default options
-  var config = utils.merge({ append: true, threshold: false, gzipOptions: {} }, options);
+  var defaultConfig = {
+    append: true,
+    threshold: false,
+    gzipOptions: {},
+    skipGrowingFiles: false
+  };
+  var config = utils.merge(defaultConfig, options);
 
   // Create a through2 object stream. This is our plugin export
   var stream = through2.obj(gulpGzip);
