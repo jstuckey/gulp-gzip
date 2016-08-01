@@ -56,7 +56,7 @@ gzip({ threshold: true })
 
 ### gzipOptions `Object`
 
-Options object to pass through to zlib.Gzip. See [zlib documentation](http://nodejs.org/api/zlib.html#zlib_options) for more information.
+Options object to pass through to zlib.Gzip. See [zlib documentation][gzip-options] for more information.
 
 ```javascript
 gzip({ gzipOptions: { level: 9 } })
@@ -140,3 +140,6 @@ gulp.task('tarball', function() {
 ```
 
 [More examples](https://github.com/jstuckey/gulp-gzip/tree/master/examples).
+
+
+  [gzip-options]: https://nodejs.org/api/zlib.html#zlib_class_options
