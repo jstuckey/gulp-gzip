@@ -3,13 +3,13 @@ gulp-gzip
 
 Gzip plugin for [gulp](https://github.com/wearefractal/gulp).
 
-#Install
+ # Install
 
 ```
 npm install --save-dev gulp-gzip
 ```
 
-#Options
+# Options
 
 ### append `Boolean`
 
@@ -96,7 +96,7 @@ Some files actually get larger after compression. If true, this option passes al
  gzip({ skipGrowingFiles : true })
 ```
 
-#Examples
+# Examples
 
 ```javascript
 var gulp = require('gulp');
