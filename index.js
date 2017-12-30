@@ -3,9 +3,10 @@
 
 var fs          = require('fs');
 var path        = require('path');
-var gutil       = require('gulp-util');
 var through2    = require('through2');
-var PluginError = gutil.PluginError;
+var PluginError = require('plugin-error');
+var fancyLog    = require('fancy-log');
+var colors      = require('ansi-colors');
 var utils       = require('./lib/utils');
 var compress    = require('./lib/compress.js');
 
@@ -84,7 +85,7 @@ module.exports = function (options) {
 
         fs.exists(filepath, function(exists) {
           if(exists) {
-            gutil.log(gutil.colors.green('Gzipped file ' + filepath + ' deleted'));
+            fancyLog(colors.green('Gzipped file ' + filepath + ' deleted'));
             fs.unlink(filepath, complete);
           } else {
             complete();
