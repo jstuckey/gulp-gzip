@@ -1,6 +1,6 @@
 {
   "name": "gulp-gzip",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "license": "MIT",
   "description": "Gzip plugin for gulp.",
   "keywords": [
