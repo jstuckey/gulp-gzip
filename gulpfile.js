@@ -37,4 +37,4 @@ gulp.task('watch', function() {
   }, ['clean', 'lint', 'test'])
 });
 
-gulp.task('default', ['watch']);
+gulp.task('default', gulp.series('watch'));

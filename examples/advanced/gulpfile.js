@@ -11,21 +11,21 @@ gulp.task('clean', function(cb) {
 });
 
 gulp.task('small', function() {
-  gulp.src('../files/small.txt')
+  return gulp.src('../files/small.txt')
     .pipe(gzip(config))
     .pipe(gulp.dest('tmp'));
 });
 
 gulp.task('big', function() {
-  gulp.src('../files/big.txt')
+  return gulp.src('../files/big.txt')
     .pipe(gzip(config))
     .pipe(gulp.dest('tmp'));
 });
 
 gulp.task('large', function() {
-  gulp.src('../files/large.txt', { buffer: false })
+  return gulp.src('../files/large.txt', { buffer: false })
     .pipe(gzip(config))
     .pipe(gulp.dest('tmp'));
 });
 
-gulp.task('default', ['clean', 'small', 'big', 'large']);
+gulp.task('default', gulp.series('clean', 'small', 'big', 'large'));
