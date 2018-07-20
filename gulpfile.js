@@ -1,4 +1,4 @@
-var clean   = require('gulp-clean');
+var del     = require('del');
 var filter  = require('gulp-filter');
 var gulp    = require('gulp');
 var mocha   = require('gulp-mocha');
@@ -8,11 +8,11 @@ var stylish = require('jshint-stylish');
 
 var root = __dirname;
 
-gulp.task('clean', function() {
-  return gulp.src([
+gulp.task('clean', function(cb) {
+  return del([
     'examples/*/tmp',
     'test/tmp'
-  ]).pipe(clean());
+  ], cb);
 });
 
 gulp.task('lint', function() {

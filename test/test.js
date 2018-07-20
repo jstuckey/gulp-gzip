@@ -1,4 +1,3 @@
-var clean  = require('gulp-clean');
 var fs     = require('fs');
 var gulp   = require('gulp');
 var log    = require('fancy-log');

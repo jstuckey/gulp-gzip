@@ -1,14 +1,13 @@
-var clean = require('gulp-clean');
-var gulp  = require('gulp');
-var gzip  = require('../../index');
+var del  = require('del');
+var gulp = require('gulp');
+var gzip = require('../../index');
 
 var config = {
   threshold: '1kb'
 };
 
-gulp.task('clean', function() {
-  gulp.src('tmp', { read: false })
-    .pipe(clean());
+gulp.task('clean', function(cb) {
+  return del('tmp', cb);
 });
 
 gulp.task('small', function() {
